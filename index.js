@@ -12,6 +12,8 @@ module.exports = function(opts) {
 
 // Blob URLs become invalid once the page is closed
 var isValidBlobURL = function(url, cb) {
+  if (!url) return cb(url, false);
+
   xhr({uri: url},
       function(err, resp, body) {
         console.log('XHR',err,resp,body);
@@ -21,9 +23,7 @@ var isValidBlobURL = function(url, cb) {
       });
 };
 
-window.isValidBlobURL = isValidBlobURL;
-
-function Messenger(opts) {
+var createNewBlob = function() {
   var text = [
 'var ports = [];',
 '',
@@ -52,39 +52,43 @@ function Messenger(opts) {
 '});'].join('\n');
   //console.log(text);
 
+  var blob = new Blob([text], {type: 'text/javascript'});
+  var url = URL.createObjectURL(blob);
+  // save Blob URL across instances since must match for shared workers
+  window.localStorage[name] = url = URL.createObjectURL(blob);
+  console.log('Created new Blob URL',url);
+
+  return url;
+};
+
+
+function Messenger(opts) {
   var url = window.localStorage[name];
+  var self = this;
   isValidBlobURL(url, function(url, isValid) {
     if (!isValid) {
-      var blob = new Blob([text], {type: 'text/javascript'});
-      // save Blob URL across instances since must match
-      window.localStorage[name] = url = URL.createObjectURL(blob);
-      console.log('Created new Blob URL',url);
+      url = createNewBlob();
     } else {
       console.log('Using existing valid Blob URL',url);
     }
 
+    console.log(url);
+
+    try {
+      //self.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
+      self.worker = new SharedWorker(url);
+    } catch (e) {
+      console.log('FAIL',e);
+    }
+
+    self.worker.port.addEventListener('message', function(ev) {
+      console.log('[SW] received data ',ev.data);
+      self.emit('data', ev.data);
+    });
+
+    self.worker.port.start();
+    self.emit('open');
   });
-
-  if (!url) {
-    window.localStorage[name] = url = URL.createObjectURL(blob);
-  }
-  console.log(url);
-
-  try {
-    //this.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
-    this.worker = new SharedWorker(url);
-  } catch (e) {
-    console.log('FAIL',e);
-  }
-
-  var self = this;
-  this.worker.port.addEventListener('message', function(ev) {
-    console.log('[SW] received data ',ev.data);
-    self.emit('data', ev.data);
-  });
-
-  this.worker.port.start();
-  this.emit('open');
 }
 
 inherits(Messenger, EventEmitter);
