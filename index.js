@@ -1,3 +1,4 @@
+'use strict';
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
 
@@ -10,11 +11,11 @@ function Messenger(opts) {
 
   var self = this;
   this.worker.port.addEventListener('message', function(ev) {
-      self.emit('data', ev.data);
+    self.emit('data', ev.data);
   });
 
-  this.worker.port.start()
-  // TODO: 'open' event
+  this.worker.port.start();
+  this.emit('open');
 }
 
 inherits(Messenger, EventEmitter);
@@ -25,6 +26,7 @@ Messenger.prototype.write = function(data) {
 };
 
 Messenger.prototype.close = function() {
-  // TODO
+  console.log('closing');
+  this.worker.port.postMessage(null);
 };
 
