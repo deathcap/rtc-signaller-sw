@@ -14,5 +14,5 @@ self.addEventListener('connect', function(connectEvent) {
     }
   };
 
-  newPort.postMessage('welcomeX');
+  newPort.postMessage('welcome, connection #'+ports.length);
 });
