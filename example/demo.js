@@ -12,5 +12,9 @@ quickconnect(messenger, {ns: 'dctest'})
 
     console.log('test dc open for peer: ' + id);
     dc.send('hi');
+
+    var interval = window.setInterval(function() {
+      dc.send('hi ' + id);
+    }, 1000);
   });
 
