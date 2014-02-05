@@ -13,9 +13,25 @@
   Messenger = (function(_super) {
     __extends(Messenger, _super);
 
-    function Messenger(opts) {}
+    function Messenger(opts) {
+      var blob, url;
+      blob = new Blob(["var ports = []; self.onconnect = function(connectEvent) { var newPort = connectEvent.ports[0]; /* note: always exactly one port */ newPort.postMessage('welcome'); newPort.onmessage = function(messageEvent) { for (var i = 0; i < ports.length; ++i) { var port = ports[i]; if (port !== newPort) /* send to everyone but ourselves */ port.postMessage(messageEvent.data); } } }"], {
+        type: 'text/javascript'
+      });
+      url = URL.createObjectURL(blob);
+      console.log(url);
+      this.worker = new SharedWorker(url, 'rtc-signaller-sw');
+      this.worker.port.addEventListener('message', (function(_this) {
+        return function(ev) {
+          return _this.emit('data', ev.data);
+        };
+      })(this));
+      this.worker.port.start();
+    }
 
-    Messenger.prototype.write = function(data) {};
+    Messenger.prototype.write = function(data) {
+      return this.worker.port.postMessage(data);
+    };
 
     Messenger.prototype.close = function() {};
 
