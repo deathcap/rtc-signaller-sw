@@ -1,13 +1,16 @@
 {
   "name": "rtc-signaller-sw",
-  "description": "",
+  "description": "messenger for rtc-signaller using Shared Workers",
   "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git@github.com:deathcap/rtc-signaller-sw.git"
   },
   "keywords": [
-    "voxel"
+    "rtc",
+    "worker",
+    "webworker",
+    "local"
   ],
   "dependencies": {
     "inherits": "~2.0.1",

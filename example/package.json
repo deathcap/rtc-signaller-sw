@@ -1,6 +1,6 @@
 {
   "name": "rtc-signaller-sw-demo",
-  "description": "",
+  "description": "example using rtc-signaller-sw with rtc-quickconnect",
   "version": "0.0.1",
   "main": "demo.js",
   "repository": {
