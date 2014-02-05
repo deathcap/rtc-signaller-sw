@@ -14,10 +14,7 @@
     __extends(Messenger, _super);
 
     function Messenger(opts) {
-      var url;
-      url = 'worker.js';
-      console.log(url);
-      this.worker = new SharedWorker(url, 'rtc-signaller-sw');
+      this.worker = new SharedWorker('worker.js', 'rtc-signaller-sw');
       this.worker.port.addEventListener('message', (function(_this) {
         return function(ev) {
           return _this.emit('data', ev.data);

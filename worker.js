@@ -1,17 +1,16 @@
 var ports = [];
 
-self.onconnect = function(connectEvent) {
+self.addEventListener('connect', function(connectEvent) {
   var newPort = connectEvent.ports[0]; /* note: always exactly one port */
 
-  newPort.postMessage('welcome');
+  newPort.postMessage('welcome>>..'+Math.random());
 
-  newPort.onmessage = function(messageEvent) {
+  newPort.addEventListener('message', function(messageEvent) {
     for (var i = 0; i < ports.length; ++i) {
       var port = ports[i];
 
       if (port !== newPort) /* send to everyone but ourselves */
         port.postMessage(messageEvent.data);
     }
-  }
-}
-
+  });
+});
