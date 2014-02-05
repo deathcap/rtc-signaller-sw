@@ -8,7 +8,10 @@ module.exports = function(opts) {
 };
 
 function Messenger(opts) {
-  this.worker = new SharedWorker(path.join(__dirname, 'worker.js'), 'rtc-signaller-sw');
+  var url = 'data:text/javascript,' + require('./worker.js');
+  console.log(url);
+
+  this.worker = new SharedWorker(url, 'rtc-signaller-sw');
 
   var self = this;
   this.worker.port.addEventListener('message', function(ev) {
