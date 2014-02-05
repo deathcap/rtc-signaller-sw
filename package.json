@@ -10,9 +10,9 @@
     "voxel"
   ],
   "dependencies": {
+    "inherits": "~2.0.1"
   },
-  "peerDependencies": {
-  },
+  "peerDependencies": {},
   "scripts": {
     "start": "beefy test.js"
   },
