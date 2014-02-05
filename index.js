@@ -2,6 +2,7 @@
 var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
 var path = require('path');
+var xhr = require('xhr');
 
 var name = 'rtc-signaller-sw';
 
@@ -10,18 +11,13 @@ module.exports = function(opts) {
 };
 
 var isValidBlobURL = function(url, cb) {
-  var fr = new FileReader();
-  fr.onloadend = function() {
-    console.log(fr);
-    var valid = !!fr.result && fr.result.length !== 0;
-    cb(url, valid);
-  };
+  xhr({uri: url},
+      function(err, resp, body) {
+        console.log('XHR',err,resp,body);
 
-  fr.onerror = function() {
-    cb(url, false);
-  };
-
-  fr.readAsText(url);
+        var valid = !!body && body.length !== 0;
+        cb(url, valid);
+      });
 };
 
 window.isValidBlobURL = isValidBlobURL;
