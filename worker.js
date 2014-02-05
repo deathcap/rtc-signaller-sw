@@ -4,7 +4,7 @@ self.addEventListener('connect', function(connectEvent) {
   var newPort = connectEvent.ports[0]; /* note: always exactly one port */
 
   newPort.onmessage = function(messageEvent) {
-    newPort.postMessage('reply');
+    newPort.postMessage('replying to '+ports.length+' connections');
 
     for (var i = 0; i < ports.length; ++i) {
       var port = ports[i];
@@ -13,6 +13,8 @@ self.addEventListener('connect', function(connectEvent) {
         port.postMessage(messageEvent.data);
     }
   };
+
+  ports.push(newPort);
 
   newPort.postMessage('welcome, connection #'+ports.length);
 });
