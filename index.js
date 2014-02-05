@@ -41,7 +41,7 @@ var createNewBlob = function() {
 '    for (var i = 0; i < ports.length; ++i) {',
 '      var port = ports[i];',
 '',
-'      if (port !== newPort) /* send to everyone but ourselves */',
+//'      if (port !== newPort) /* send to everyone but ourselves */', // TODO: not supposed to?
 '        port.postMessage(messageEvent.data);',
 '    }',
 '  };',
