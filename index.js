@@ -10,15 +10,18 @@ module.exports = function(opts) {
 };
 
 var isValidBlobURL = function(url, cb) {
-  var fr = new FileReader(url);
+  var fr = new FileReader();
   fr.onloadend = function() {
-    var valid = fr.result && fr.result.length !== 0;
+    console.log(fr);
+    var valid = !!fr.result && fr.result.length !== 0;
     cb(url, valid);
   };
 
   fr.onerror = function() {
     cb(url, false);
-  }
+  };
+
+  fr.readAsText(url);
 };
 
 window.isValidBlobURL = isValidBlobURL;
@@ -53,9 +56,16 @@ function Messenger(opts) {
   console.log(text);
 
   var blob = new Blob([text], {type: 'text/javascript'});
+  console.log(blob);
+
+  var url = URL.createObjectURL(blob);
 
   //delete window.localStorage[name];
-  var url = window.localStorage[name];
+  //var url = window.localStorage[name];
+  isValidBlobURL(url, function(url, isValid) {
+    console.log('isValid?',url,isValid);
+  });
+
   if (!url) {
     // save Blob URL across instances since must match
     window.localStorage[name] = url = URL.createObjectURL(blob);
