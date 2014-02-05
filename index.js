@@ -24,6 +24,7 @@
     }
 
     Messenger.prototype.write = function(data) {
+      console.log('sending data', data);
       return this.worker.port.postMessage(data);
     };
 

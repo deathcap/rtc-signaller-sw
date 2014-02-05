@@ -14,6 +14,7 @@ class Messenger extends EventEmitter
     # TODO: 'open' event
 
   write: (data) ->
+    console.log 'sending data',data
     @worker.port.postMessage data
 
   close: () ->
