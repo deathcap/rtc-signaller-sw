@@ -65,6 +65,7 @@ var createNewBlob = function() {
 function Messenger(opts) {
   var url = window.localStorage[name];
   var self = this;
+  self.buffered = [];
   isValidBlobURL(url, function(url, isValid) {
     if (!isValid) {
       url = createNewBlob();
@@ -88,6 +89,13 @@ function Messenger(opts) {
 
     self.worker.port.start();
     self.emit('open');
+
+    // send data write()'d before we were connected TODO: why?
+    for (var i = 0; i < self.buffered.length; ++i) {
+      console.log('[Sw] sending buffered ',self.buffered[i]);
+      self.worker.port.postMessage(self.buffered[i]);
+    }
+    self.buffered = [];
   });
 }
 
@@ -95,7 +103,12 @@ inherits(Messenger, EventEmitter);
 
 Messenger.prototype.write = function(data) {
   console.log('[SW] sending data',data);
-  this.worker.port.postMessage(data);
+  if (!this.worker) {
+    console.log('[SW] (buffering)');
+    this.buffered.push(data);
+  } else {
+    this.worker.port.postMessage(data);
+  }
 };
 
 Messenger.prototype.close = function() {
