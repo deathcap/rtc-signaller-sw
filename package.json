@@ -13,5 +13,8 @@
   },
   "peerDependencies": {
   },
+  "scripts": {
+    "start": "beefy test.js"
+  },
   "license": "MIT"
 }
