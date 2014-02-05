@@ -10,6 +10,7 @@ module.exports = function(opts) {
   return new Messenger(opts);
 };
 
+// Blob URLs become invalid once the page is closed
 var isValidBlobURL = function(url, cb) {
   xhr({uri: url},
       function(err, resp, body) {
@@ -35,7 +36,7 @@ function Messenger(opts) {
 '      return;',
 '    };',
 '',
-'    newPort.postMessage("replying to "+ports.length+" connections");',
+//'    newPort.postMessage("replying to "+ports.length+" connections");',
 '',
 '    for (var i = 0; i < ports.length; ++i) {',
 '      var port = ports[i];',
@@ -47,9 +48,9 @@ function Messenger(opts) {
 '',
 '  ports.push(newPort);',
 '',
-'  //newPort.postMessage("welcome, connection #"+ports.length);',
+//'  newPort.postMessage("welcome, connection #"+ports.length);',
 '});'].join('\n');
-  console.log(text);
+  //console.log(text);
 
   var url = window.localStorage[name];
   isValidBlobURL(url, function(url, isValid) {
@@ -78,6 +79,7 @@ function Messenger(opts) {
 
   var self = this;
   this.worker.port.addEventListener('message', function(ev) {
+    console.log('[SW] received data ',ev.data);
     self.emit('data', ev.data);
   });
 
@@ -88,12 +90,12 @@ function Messenger(opts) {
 inherits(Messenger, EventEmitter);
 
 Messenger.prototype.write = function(data) {
-  console.log('sending data',data);
+  console.log('[SW] sending data',data);
   this.worker.port.postMessage(data);
 };
 
 Messenger.prototype.close = function() {
-  console.log('closing');
+  console.log('[SW] closing');
   this.worker.port.postMessage(null);
 };
 

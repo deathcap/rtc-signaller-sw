@@ -1,0 +1,18 @@
+{
+  "name": "rtc-signaller-sw-demo",
+  "description": "",
+  "version": "0.0.1",
+  "main": "demo.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:deathcap/rtc-signaller-sw.git"
+  },
+  "keywords": [],
+  "dependencies": {
+    "rtc-quickconnect": "~0.11.2"
+  },
+  "scripts": {
+    "start": "beefy demo.js"
+  },
+  "license": "MIT"
+}
