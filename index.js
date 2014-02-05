@@ -14,11 +14,8 @@
     __extends(Messenger, _super);
 
     function Messenger(opts) {
-      var blob, url;
-      blob = new Blob(["var ports = []; self.onconnect = function(connectEvent) { var newPort = connectEvent.ports[0]; /* note: always exactly one port */ newPort.postMessage('welcome'); newPort.onmessage = function(messageEvent) { for (var i = 0; i < ports.length; ++i) { var port = ports[i]; if (port !== newPort) /* send to everyone but ourselves */ port.postMessage(messageEvent.data); } } }"], {
-        type: 'text/javascript'
-      });
-      url = URL.createObjectURL(blob);
+      var url;
+      url = 'worker.js';
       console.log(url);
       this.worker = new SharedWorker(url, 'rtc-signaller-sw');
       this.worker.port.addEventListener('message', (function(_this) {
