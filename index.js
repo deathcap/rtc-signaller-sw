@@ -51,25 +51,27 @@ function Messenger(opts) {
 '});'].join('\n');
   console.log(text);
 
-  var blob = new Blob([text], {type: 'text/javascript'});
-  console.log(blob);
-
-  var url = URL.createObjectURL(blob);
-
-  //delete window.localStorage[name];
-  //var url = window.localStorage[name];
+  var url = window.localStorage[name];
   isValidBlobURL(url, function(url, isValid) {
-    console.log('isValid?',url,isValid);
+    if (!isValid) {
+      var blob = new Blob([text], {type: 'text/javascript'});
+      // save Blob URL across instances since must match
+      window.localStorage[name] = url = URL.createObjectURL(blob);
+      console.log('Created new Blob URL',url);
+    } else {
+      console.log('Using existing valid Blob URL',url);
+    }
+
   });
 
   if (!url) {
-    // save Blob URL across instances since must match
     window.localStorage[name] = url = URL.createObjectURL(blob);
   }
   console.log(url);
 
   try {
-    this.worker = new SharedWorker(url, 'rtc-signaller-sw');
+    //this.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
+    this.worker = new SharedWorker(url);
   } catch (e) {
     console.log('FAIL',e);
   }
