@@ -16,7 +16,7 @@ var isValidBlobURL = function(url, cb) {
 
   xhr({uri: url, sync: true},
       function(err, resp, body) {
-        console.log('XHR',err,resp,body);
+        console.log('XHR',url,err,resp,body);
 
         var valid = !!body && body.length !== 0;
         cb(url, valid);
@@ -25,18 +25,21 @@ var isValidBlobURL = function(url, cb) {
 
 var createNewBlob = function() {
   var text = [
+'"use strict";',
 'var ports = [];',
 '',
-'self.addEventListener("connect", function(connectEvent) {',
+'self.onconnect = function(connectEvent) {',
+'  connectEvent.ports[0].postMessage("init");',
 '  var newPort = connectEvent.ports[0]; /* note: always exactly one port */',
 '',
 '  newPort.onmessage = function(messageEvent) {',
+'    newPort.postMessage("echo "+messageEvent.data);',
 '    if (messageEvent.data === null) {',
 '      ports.splice(ports.indexOf(newPort), 1);',
 '      return;',
-'    };',
+'    }',
 '',
-//'    newPort.postMessage("replying to "+ports.length+" connections");',
+'    newPort.postMessage("replying to "+ports.length+" connections");',
 '',
 '    for (var i = 0; i < ports.length; ++i) {',
 '      var port = ports[i];',
@@ -48,8 +51,8 @@ var createNewBlob = function() {
 '',
 '  ports.push(newPort);',
 '',
-//'  newPort.postMessage("welcome, connection #"+ports.length);',
-'});'].join('\n');
+'  newPort.postMessage("welcome, connection #"+ports.length);',
+'};'].join('\n');
   //console.log(text);
 
   var blob = new Blob([text], {type: 'text/javascript'});
@@ -75,19 +78,22 @@ function Messenger(opts) {
 
     console.log(url);
 
-    try {
-      //self.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
-      self.worker = new SharedWorker(url);
-    } catch (e) {
-      console.log('FAIL',e);
-    }
+    //self.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
+    self.worker = new SharedWorker(url);
 
-    self.worker.port.addEventListener('message', function(ev) {
+    window.workers = window.workers || [];
+    window.workers.push(self.worker);
+
+    self.worker.port.onerror = self.worker.onerror = function(ev) {
+      console.log('[SW] worker error: '+ev);
+    };
+    self.worker.port.onmessage = function(ev) {
       console.log('[SW] received data ',ev.data);
       self.emit('data', ev.data);
-    });
+    };
 
     self.worker.port.start();
+    self.worker.port.postMessage('ping');
     self.emit('open');
 
     // send data write()'d before we were connected TODO: why?
