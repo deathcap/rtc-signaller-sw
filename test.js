@@ -8,7 +8,7 @@ console.log('We are '+id);
 messenger.on('data', function(ev) {
   console.log(ev);
 });
-messeger.on('open', function() {
+messenger.on('open', function() {
   var count = 0;
   var interval = setInterval(function() {
     messenger.write('hi from '+id);
