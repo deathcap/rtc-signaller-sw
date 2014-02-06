@@ -14,7 +14,7 @@ module.exports = function(opts) {
 var isValidBlobURL = function(url, cb) {
   if (!url) return cb(url, false);
 
-  xhr({uri: url},
+  xhr({uri: url, sync: true},
       function(err, resp, body) {
         console.log('XHR',err,resp,body);
 
