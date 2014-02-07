@@ -42,8 +42,18 @@ var scriptText = [
 '};'].join('\n');
 
 function Messenger(opts) {
+  this.buffered = [];
+  this.opts = opts;
+  this.started = false;
+};
+
+inherits(Messenger, EventEmitter);
+
+Messenger.prototype.start = function() {
   var self = this;
-  self.buffered = [];
+
+  self.started = true; // or starting
+  var opts = self.opts;
 
   url4data(scriptText, name, {type:'text/javascript'}, function(url) {
     console.log(url);
@@ -64,6 +74,7 @@ function Messenger(opts) {
 
     self.worker.port.start();
     self.worker.port.postMessage('ping');
+    console.log('EMITTING OPEN');
     self.emit('open');
 
     // send data write()'d before we were connected TODO: why?
@@ -73,11 +84,12 @@ function Messenger(opts) {
     }
     self.buffered = [];
   });
-}
-
-inherits(Messenger, EventEmitter);
+};
 
 Messenger.prototype.write = function(data) {
+  if (!this.started)
+    this.start();
+
   console.log('[SW] sending data',data);
   if (!this.worker) {
     console.log('[SW] (buffering)');

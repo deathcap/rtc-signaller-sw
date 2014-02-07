@@ -9,6 +9,7 @@ messenger.on('data', function(ev) {
   console.log(ev);
 });
 messenger.on('open', function() {
+  console.log('OPENED');
   var count = 0;
   var interval = setInterval(function() {
     messenger.write('hi from '+id);
@@ -21,3 +22,5 @@ messenger.on('open', function() {
     */
   }, 1000);
 });
+
+messenger.write('hello');
