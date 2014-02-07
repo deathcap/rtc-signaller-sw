@@ -26,7 +26,7 @@ var scriptText = [
 '      return;',
 '    }',
 '',
-'    newPort.postMessage("replying to "+ports.length+" connections");',
+//'    newPort.postMessage("replying to "+ports.length+" connections");',
 '',
 '    for (var i = 0; i < ports.length; ++i) {',
 '      var port = ports[i];',
@@ -38,7 +38,7 @@ var scriptText = [
 '',
 '  ports.push(newPort);',
 '',
-'  newPort.postMessage("welcome, connection #"+ports.length);',
+//'  newPort.postMessage("welcome, connection #"+ports.length);',
 '};'].join('\n');
 
 function Messenger(opts) {
@@ -73,13 +73,12 @@ Messenger.prototype.start = function() {
     };
 
     self.worker.port.start();
-    self.worker.port.postMessage('ping');
-    console.log('EMITTING OPEN');
+    //self.worker.port.postMessage('ping');
     self.emit('open');
 
     // send data write()'d before we were connected TODO: why?
     for (var i = 0; i < self.buffered.length; ++i) {
-      console.log('[Sw] sending buffered ',self.buffered[i]);
+      console.log('[SW] sending buffered ',self.buffered[i]);
       self.worker.port.postMessage(self.buffered[i]);
     }
     self.buffered = [];
