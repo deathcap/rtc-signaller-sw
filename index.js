@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 var inherits = require('inherits');
 var path = require('path');
 var xhr = require('xhr');
+var url4data = require('url4data');
 
 var name = 'rtc-signaller-sw';
 
@@ -10,21 +11,7 @@ module.exports = function(opts) {
   return new Messenger(opts);
 };
 
-// Blob URLs become invalid once the page is closed
-var isValidBlobURL = function(url, cb) {
-  if (!url) return cb(url, false);
-
-  xhr({uri: url, sync: true},
-      function(err, resp, body) {
-        console.log('XHR',url,err,resp,body);
-
-        var valid = !!body && body.length !== 0;
-        cb(url, valid);
-      });
-};
-
-var createNewBlob = function() {
-  var text = [
+var scriptText = [
 '"use strict";',
 'var ports = [];',
 '',
@@ -53,29 +40,12 @@ var createNewBlob = function() {
 '',
 '  newPort.postMessage("welcome, connection #"+ports.length);',
 '};'].join('\n');
-  //console.log(text);
-
-  var blob = new Blob([text], {type: 'text/javascript'});
-  var url = URL.createObjectURL(blob);
-  // save Blob URL across instances since must match for shared workers
-  window.localStorage[name] = url = URL.createObjectURL(blob);
-  console.log('Created new Blob URL',url);
-
-  return url;
-};
-
 
 function Messenger(opts) {
-  var url = window.localStorage[name];
   var self = this;
   self.buffered = [];
-  isValidBlobURL(url, function(url, isValid) {
-    if (!isValid) {
-      url = createNewBlob();
-    } else {
-      console.log('Using existing valid Blob URL',url);
-    }
 
+  url4data(scriptText, name, {type:'text/javascript'}, function(url) {
     console.log(url);
 
     //self.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
