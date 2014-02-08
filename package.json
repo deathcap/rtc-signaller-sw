@@ -15,7 +15,7 @@
   "dependencies": {
     "inherits": "~2.0.1",
     "xhr": "~1.3.1",
-    "url4data": "git://github.com/deathcap/url4data.git#4644c6aa66ed48a67ed1c7e79b5149177dab5680"
+    "url4data": "git://github.com/deathcap/url4data.git#bc7fb1c6b340700bb601b6d7e6f29ccb16843ef2"
   },
   "peerDependencies": {},
   "scripts": {

@@ -55,11 +55,12 @@ Messenger.prototype.start = function() {
   self.started = true; // or starting
   var opts = self.opts;
 
-  url4data(scriptText, name, {type:'text/javascript'}, function(url) {
+  url4data(scriptText, name, {type:'text/javascript', scheme:['filesystem', 'blob']}, function(url) {
     console.log(url);
 
     //self.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
     self.worker = new SharedWorker(url);
+    console.log('[SW] created shared worker',self.worker);
 
     window.workers = window.workers || [];
     window.workers.push(self.worker);
