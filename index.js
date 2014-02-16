@@ -5,7 +5,7 @@ var path = require('path');
 var xhr = require('xhr');
 var url4data = require('url4data');
 
-var name = 'rtc-signaller-sw';
+var name = 'rtc-signaller-sw.js';
 
 module.exports = function(opts) {
   return new Messenger(opts);
@@ -55,7 +55,7 @@ Messenger.prototype.start = function() {
   self.started = true; // or starting
   var opts = self.opts;
 
-  url4data(scriptText, name, {type:'text/javascript', scheme:['filesystem', 'blob']}, function(url) {
+  url4data(scriptText, name, {type:'application/javascript', scheme:['filesystem', 'blob']}, function(url) {
     console.log(url);
 
     //self.worker = new SharedWorker(url, 'rtc-signaller-sw'); // not using name since will mismatch URL
